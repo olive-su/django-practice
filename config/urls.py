@@ -17,9 +17,12 @@ from django.contrib import admin
 from django.urls import path, include
 
 from stock import views
+from stock import views as company
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('stock/', include('stock.urls')), 
+    # path('stock/', include('stock.urls')),
     # 'stock/'으로 시작되는 페이지 요청은 모두 'stock/urls.py'의 url 정보 참고
+    path('', include('stock.urls')),
+    path('company/', company.company),
 ]
