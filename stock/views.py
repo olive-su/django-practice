@@ -2,7 +2,7 @@ from django.conf import Settings
 from django.shortcuts import render
 from django.http import HttpResponse  # 페이지 요청에 대한 응답 시 사용하는 클래스
 from django.conf import settings
-from .models import Company
+from .models import *
 import json
 import urllib
 import os
@@ -37,6 +37,21 @@ def company(request):
     page_obj = paginator.get_page(page)
     context = {'comp': page_obj, 'page': page, 'kw': kw}
     return render(request, 'stock/company.html', context)
+
+
+def daily(request):
+    queryset = StockDaily.objects.all()
+    # queryset을 통하여 별도로 SQL을 작성할 필요 없이 DB로 부터 데이터를 가져오고 추가, 수정, 삭제가 가능
+    if not 'kw' in request.GET:
+        daily = False
+    else:  # code, company 명으로 전달될 경우
+        kw = request.GET['kw']
+        daily = queryset.filter(code=kw)
+        if not daily:
+            daily = queryset.filter(company=kw)
+        daily = daily.order_by('-date')
+    context = {'daily': daily}
+    return render(request, 'stock/daily.html', context)
 
 
 # 네이버 검색 API 활용 (Date:2022.02.06)
@@ -151,8 +166,3 @@ def news(request):
         }
         print(context)
         return render(request, 'stock/news.html', context=context)
-
-
-def daily(request):
-    if request.method == 'GET':
-        return render(request, 'stock/daily.html')
