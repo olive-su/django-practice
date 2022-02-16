@@ -43,13 +43,17 @@ def daily(request):
     queryset = StockDaily.objects.all()
     # queryset을 통하여 별도로 SQL을 작성할 필요 없이 DB로 부터 데이터를 가져오고 추가, 수정, 삭제가 가능
     if not 'kw' in request.GET:
-        daily = False
+        daily = queryset.filter(company='삼성전자')
+        daily = daily.order_by('-date')
     else:  # code, company 명으로 전달될 경우
         kw = request.GET['kw']
         daily = queryset.filter(code=kw)
+        daily = daily.order_by('-date')
         if not daily:
             daily = queryset.filter(company=kw)
-        daily = daily.order_by('-date')
+            daily = daily.order_by('-date')
+    if not daily:
+        daily = False
     context = {'daily': daily}
     return render(request, 'stock/daily.html', context)
 
