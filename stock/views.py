@@ -20,6 +20,13 @@ def index(request):
     return render(request, 'stock/index.html', context)
 
 
+def dashboard(request):
+
+    company_list = Company.objects.all()
+    context = {'company_list': company_list}
+    return render(request, 'stock/dashboard.html', context)
+
+
 def company(request):
     comp = Company.objects.all()
     page = request.GET.get('page', '1')  # 페이지
