@@ -9,3 +9,6 @@ urlpatterns = [
     path('daily/', views.daily, name='daily'),
     path('dashboard/', views.dashboard, name='dashboard')
 ]
+
+
+
