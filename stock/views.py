@@ -25,8 +25,8 @@ def dashboard(request):
 
         headers = {
             'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"}
-        response2 = requests.get(url1, headers=headers)
-        soup = BeautifulSoup(response2.text, 'html.parser')
+        response1 = requests.get(url1, headers=headers)
+        soup = BeautifulSoup(response1.text, 'html.parser')
 
         news_title = soup.select(
             '#contentarea_left > div.mainNewsList > ul > li:nth-child(1) > dl > dd.articleSubject > a')
@@ -68,10 +68,59 @@ def dashboard(request):
             'news_image': news_image
         }
 
+        # 코스피, 코스닥 크롤링
+        url3 = f'https://finance.naver.com/'
+
+        headers = {
+            'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"}
+        response3 = requests.get(url3, headers=headers)
+        soup = BeautifulSoup(response3.text, 'html.parser')
+        today = soup.select('#time')[0].text[:-4]
+        kospi_num1 = soup.select(
+            '#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.heading_area > a > span > span.num')[0].text
+        kospi_num2 = soup.select(
+            '#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.heading_area > a > span > span.num2')[0].text
+        kospi_num3 = soup.select(
+            '#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.heading_area > a > span > span.num3')[0].text
+        if kospi_num3[0] == '+':
+            kospi_sign = 'text-danger'
+        elif kospi_num3[0] == '-':
+            kospi_sign = 'text-primary'
+        else:
+            kospi_sign = 'text-dark'
+        kospi_graph = soup.select(
+            '#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kospi_area.group_quot.quot_opn > div.chart_area > a > img')[0].get('src')
+
+        kosdaq_num1 = soup.select(
+            '#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.heading_area > a > span > span.num')[0].text
+        kosdaq_num2 = soup.select(
+            '#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.heading_area > a > span > span.num2')[0].text
+        kosdaq_num3 = soup.select(
+            '#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.heading_area > a > span > span.num3')[0].text
+        if kosdaq_num3[0] == '+':
+            kosdaq_sign = 'text-danger'
+        elif kosdaq_num3[0] == '-':
+            kosdaq_sign = 'text-primary'
+        else:
+            kosdaq_sign = 'text-dark'
+        kosdaq_graph = soup.select(
+            '#content > div.article > div.section2 > div.section_stock_market > div.section_stock > div.kosdaq_area.group_quot > div.chart_area > a > img')[0].get('src')
+
         context = {
-            'main_news': main_news
+            'main_news': main_news,
+            'today': today,
+            'kospi_num1': kospi_num1,
+            'kospi_num2': kospi_num2,
+            'kospi_num3': kospi_num3,
+            'kospi_sign': kospi_sign,
+            'kospi_graph': kospi_graph,
+            'kosdaq_num1': kosdaq_num1,
+            'kosdaq_num2': kosdaq_num2,
+            'kosdaq_num3': kosdaq_num3,
+            'kosdaq_sign': kosdaq_sign,
+            'kosdaq_graph': kosdaq_graph,
+
         }
-        print(context)
         return render(request, 'stock/dashboard.html', context=context)
 
     # company_list = Company.objects.all()
