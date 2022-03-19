@@ -36,6 +36,18 @@
             user-select: none;
         }
 
+        .img_div {
+            overflow: hidden;
+        }
+
+        .img_div img {
+            padding-left: 30;
+            opacity: 0.5;
+            object-fit: cover;
+            height: 100%;
+
+        }
+
         @media (min-width: 768px) {
             .bd-placeholder-img-lg {
                 font-size: 3.5rem;
@@ -65,22 +77,23 @@
         </div>
     </div>
     <main class="container">
-        <div class="p-4 p-md-5 mb-4 text-white rounded bg-secondary">
+        <div class="d-flex p-4 p-md-5 mb-4 text-white rounded bg-secondary">
             <div class="col-md-6 px-0">
                 <p class="text-strong">
                     주요뉴스
                 </p>
-                <h1 class="display-4 fst-italic">
-                    Title of a longer featured blog post
-                </h1>
+                <h3 class="display-5 fst-italic">
+                    {{main_news.news_title}}
+                </h3>
                 <p class="lead my-3">
-                    Multiple lines of text that form the lede, informing new readers
-                    quickly and efficiently about what’s most interesting in this post’s
-                    contents.
+                    {{main_news.news_content}}
                 </p>
                 <p class="lead mb-0">
-                    <a href="#" class="text-white fw-bold">Continue reading...</a>
+                    <a href={{main_news.news_link}} class="text-white fw-bold">더보기</a>
                 </p>
+            </div>
+            <div class="img_div rounded">
+                <img src={{main_news.news_image}}>
             </div>
         </div>
         <div class="row mb-2">
@@ -88,7 +101,7 @@
                 <div
                     class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
                     <div class="col p-4 d-flex flex-column position-static">
-                        <strong class="d-inline-block mb-2 text-primary">World</strong>
+                        <strong class="d-inline-block mb-2 text-primary">코스피</strong>
                         <h3 class="mb-0">Featured post</h3>
                         <div class="mb-1 text-muted">Nov 12</div>
                         <p class="card-text mb-auto">
@@ -112,7 +125,7 @@
                 <div
                     class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
                     <div class="col p-4 d-flex flex-column position-static">
-                        <strong class="d-inline-block mb-2 text-success">Design</strong>
+                        <strong class="d-inline-block mb-2 text-success">코스닥</strong>
                         <h3 class="mb-0">Post title</h3>
                         <div class="mb-1 text-muted">Nov 11</div>
                         <p class="mb-auto">

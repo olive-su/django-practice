@@ -3,9 +3,6 @@ from django.shortcuts import render
 from django.http import HttpResponse  # 페이지 요청에 대한 응답 시 사용하는 클래스
 from django.conf import settings
 from .models import *
-import json
-import urllib
-import os
 from django.core.paginator import Paginator
 from django.db.models import Q
 import requests  # 네이버 뉴스 정보 크롤링
@@ -22,9 +19,64 @@ def index(request):
 
 def dashboard(request):
 
-    company_list = Company.objects.all()
-    context = {'company_list': company_list}
-    return render(request, 'stock/dashboard.html', context)
+    if request.method == 'GET':
+        # 뉴스 타이틀, 콘텐츠 가져오기 - 크롤링 1
+        url1 = f'http://finance.naver.com/news/mainnews.naver'
+
+        headers = {
+            'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"}
+        response2 = requests.get(url1, headers=headers)
+        soup = BeautifulSoup(response2.text, 'html.parser')
+
+        news_title = soup.select(
+            '#contentarea_left > div.mainNewsList > ul > li:nth-child(1) > dl > dd.articleSubject > a')
+        news_content = soup.select(
+            '#contentarea_left > div.mainNewsList > ul > li:nth-child(1) > dl > dd.articleSummary')
+        news_image = soup.select(
+            '#contentarea_left > div.mainNewsList > ul > li:nth-child(1) > dl > dt > a > img')
+
+        context = dict()
+
+        news_link = 'http://finance.naver.com/' + news_title[0].get('href')
+        news_title = news_title[0].text
+
+        # 뉴스 이미지 추출 작업 - 크롤링 2
+        url2 = news_link
+
+        headers = {
+            'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"}
+        response2 = requests.get(url2, headers=headers)
+        soup = BeautifulSoup(response2.text, 'html.parser')
+        news_image = soup.select('#content > span > img')[0].get('src')
+
+        # 뉴스 요약 내용 정제
+        news_content = news_content[0].text.lstrip()
+
+        news_contents = ''
+        print(news_content)
+        for nc in news_content:
+            if nc == '\n':
+                break
+            elif nc == '\t':
+                continue
+            news_contents += nc
+
+        main_news = {
+            'news_title': news_title,
+            'news_link': news_link,
+            'news_content': news_contents,
+            'news_image': news_image
+        }
+
+        context = {
+            'main_news': main_news
+        }
+        print(context)
+        return render(request, 'stock/dashboard.html', context=context)
+
+    # company_list = Company.objects.all()
+    # context = {'company_list': company_list}
+    # return render(request, 'stock/dashboard.html', context)
 
 
 def company(request):
