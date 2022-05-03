@@ -29,15 +29,17 @@ def dashboard(request):
         soup = BeautifulSoup(response1.text, 'html.parser')
 
         news_title = soup.select(
-            '#contentarea_left > div.mainNewsList > ul > li:nth-child(1) > dl > dd.articleSubject > a')
+            '#contentarea_left > div.mainNewsList > ul > li:nth-child(1) > dl > dt > a')
         news_content = soup.select(
             '#contentarea_left > div.mainNewsList > ul > li:nth-child(1) > dl > dd.articleSummary')
         news_image = soup.select(
             '#contentarea_left > div.mainNewsList > ul > li:nth-child(1) > dl > dt > a > img')
-
         context = dict()
 
-        news_link = 'http://finance.naver.com/' + news_title[0].get('href')
+        print(news_title)
+        print(news_content)
+
+        news_link = 'http://finance.naver.com' + news_title[0].get('href')
         news_title = news_title[0].text
 
         # 뉴스 이미지 추출 작업 - 크롤링 2
@@ -47,7 +49,10 @@ def dashboard(request):
             'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"}
         response2 = requests.get(url2, headers=headers)
         soup = BeautifulSoup(response2.text, 'html.parser')
-        news_image = soup.select('#content > span > img')[0].get('src')
+        if soup.select('#content > span > img'):
+            news_image = soup.select('#content > span > img')[0].get('src')
+        else:
+            news_image = None
 
         # 뉴스 요약 내용 정제
         news_content = news_content[0].text.lstrip()
